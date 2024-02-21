@@ -1,6 +1,6 @@
 <center> <h1>HBNB - The Console</h1> </center>
 
-This repository contains the initial stage of a student project to build a clone of the AirBnB website. This stage implements a backend interface, or console, to manage program data. Console commands allow the user to create, update, and destroy objects, as well as manage file storage. Using a system of JSON serialization/deserialization, storage is persistent between sessions.
+This repository contains the initial stage of a student project to build a clone of the AirBnB website. This stage implements a backend interface, or console, to manage program data. Console commands allow the user to create, update, and destroy objects, as well as manage file storage. Using a system of JSON serialization/deserialization, storage is persistent between sessions. This repository also contains Database Storage session using Python Object-relational mapping.
 
 ---
 
@@ -8,7 +8,7 @@ This repository contains the initial stage of a student project to build a clone
 
 | Tasks | Files | Description |
 | ----- | ----- | ------ |
-| 0: Authors/README File | [AUTHORS](https://github.com/justinmajetich/AirBnB_clone/blob/dev/AUTHORS) | Project authors |
+| 0: Authors/README File | [AUTHORS](https://github.com/thisisteey/AirBnB_clone_v2/blob/master/AUTHORS) | Project authors |
 | 1: Pep8 | N/A | All code is pep8 compliant|
 | 2: Unit Testing | [/tests](https://github.com/justinmajetich/AirBnB_clone/tree/dev/tests) | All class-defining modules are unittested |
 | 3. Make BaseModel | [/models/base_model.py](https://github.com/justinmajetich/AirBnB_clone/blob/dev/models/base_model.py) | Defines a parent class to be inherited by all model classes|
@@ -68,6 +68,16 @@ Advanced syntax is implemented for the following commands:
 <br>
 <br>
 <center> <h2>Examples</h2> </center>
+
+<center> <h4>Environment Variables</h4> </center>
+
++ `HBNB_ENV`: The running environment. It can be `dev` or `test`.
++ `HBNB_MYSQL_USER`: The MySQL server username.
++ `HBNB_MYSQL_PWD`: The MySQL server password.
++ `HBNB_MYSQL_HOST`: The MySQL server hostname.
++ `HBNB_MYSQL_DB`: The MySQL server database name.
++ `HBNB_TYPE_STORAGE`: The type of storage used. It can be `file` (using `FileStorage`) or `db` (using `DBStorage`).
+
 <h3>Primary Command Syntax</h3>
 
 ###### Example 0: Create an object
