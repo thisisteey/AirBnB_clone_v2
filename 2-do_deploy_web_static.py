@@ -36,6 +36,7 @@ def do_deploy(archive_path):
     flname = os.path.basename(archive_path)
     fldname = flname.replace(".tgz", "")
     fldpath = f"/data/web_static/releases/{fldname}/"
+    output = False
     try:
         put(archive_path, f"/tmp/{flname}")
         run(f"mkdir -p {fldpath}")
@@ -46,7 +47,7 @@ def do_deploy(archive_path):
         run(f"rm -rf /data/web_static/current")
         run(f"ln -s {fldpath} /data/web_static/current")
         print('New version deployed!')
-        return True
+        output = True
     except Exception as e:
-        print(e)
-        return False
+        output = False
+    return output
