@@ -38,7 +38,7 @@ WELCOME_PAGE="<!DOCTYPE html>
 	</body>
 </html>
 "
-if [[ "$(which nginx | grep -c nginx)" == '0' ]];
+if [[ "$(nginx-v | grep -c nginx)" == '0' ]];
 then
 	apt-get update
 	apt-get -y install nginx
