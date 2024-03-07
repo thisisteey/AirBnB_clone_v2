@@ -32,7 +32,7 @@ def do_deploy(archive_path):
     Args:
     archive_path: the path to the static files"""
     if not os.path.exists(archive_path):
-        return false
+        return False
     flname = os.path.basename(archive_path)
     fldname = flname.replace(".tgz", "")
     fldpath = f"/data/web_static/releases/{fldname}/"
