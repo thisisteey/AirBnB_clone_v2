@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from fabric.api import local, runs_once, env, put, run
 
-env.hosts = ["54.237.100.185", "18.206.208.19"]
+env.hosts = ["100.25.199.90", "52.3.242.186"]
 
 
 @runs_once
@@ -44,6 +44,7 @@ def do_deploy(archive_path):
         run(f"rm -rf /tmp/{flname}")
         run(f"mv {fldpath}web_static/* {fldpath}")
         run(f"rm -rf {fldpath}web_static")
+        run("test -L /data/web_static/current && rm /data/web_static/current")
         run(f"rm -rf /data/web_static/current")
         run(f"ln -s {fldpath} /data/web_static/current")
         print('New version deployed!')
