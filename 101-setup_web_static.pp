@@ -1,41 +1,41 @@
 #!/usr/bin/puppet apply
 # Script that sets up your web servers for the deployment of web_static
-exec { 'update-apt':
+exec { 'apt-get-update':
   command => '/usr/bin/apt-get update',
   path    => '/usr/bin:/usr/sbin:/bin',
 }
 
-exec { 'remove-current-directory':
+exec { 'remove-current':
   command => 'rm -rf /data/web_static/current',
   path    => '/usr/bin:/usr/sbin:/bin',
 }
 
-package { 'nginx-package':
+package { 'nginx':
   ensure  => installed,
-  require => Exec['update-apt'],
+  require => Exec['apt-get-update'],
 }
 
-file { '/var/www-root':
+file { '/var/www':
   ensure  => directory,
   mode    => '0755',
   recurse => true,
-  require => Package['nginx-package'],
+  require => Package['nginx'],
 }
 
-file { '/var/www-root/html/index.html':
+file { '/var/www/html/index.html':
   content => 'Hello, World!',
-  require => File['/var/www-root'],
+  require => File['/var/www'],
 }
 
-file { '/var/www-root/error/404.html':
+file { '/var/www/error/404.html':
   content => "Ceci n'est pas une page",
-  require => File['/var/www-root'],
+  require => File['/var/www'],
 }
 
-exec { 'create-static-folders':
+exec { 'make-static-files-folder':
   command => 'mkdir -p /data/web_static/releases/test /data/web_static/shared',
   path    => '/usr/bin:/usr/sbin:/bin',
-  require => Package['nginx-package'],
+  require => Package['nginx'],
 }
 
 file { '/data/web_static/releases/test/index.html':
@@ -47,18 +47,18 @@ file { '/data/web_static/releases/test/index.html':
 	</head>
 	<body>
 		<h1>Welcome to AirBnB!</h1>
-	</body>
+	<body>
 </html>
 ",
   replace => true,
-  require => Exec['create-static-folders'],
+  require => Exec['make-static-files-folder'],
 }
 
-exec { 'link-static-files-folder':
+exec { 'link-static-files':
   command => 'ln -sf /data/web_static/releases/test/ /data/web_static/current',
   path    => '/usr/bin:/usr/sbin:/bin',
   require => [
-    Exec['remove-current-directory'],
+    Exec['remove-current'],
     File['/data/web_static/releases/test/index.html'],
   ],
 }
@@ -66,10 +66,10 @@ exec { 'link-static-files-folder':
 exec { 'change-data-owner':
   command => 'chown -hR ubuntu:ubuntu /data',
   path    => '/usr/bin:/usr/sbin:/bin',
-  require => Exec['link-static-files-folder'],
+  require => Exec['link-static-files'],
 }
 
-file { '/etc/nginx/default-site':
+file { '/etc/nginx/sites-available/default':
   ensure  => present,
   mode    => '0644',
   content =>
@@ -81,7 +81,7 @@ file { '/etc/nginx/default-site':
 	error_page 404 /404.html;
 	add_header X-Served-By \$hostname;
 	location / {
-		root /var/www-root/html/;
+		root /var/www/html/;
 		try_files \$uri \$uri/ =404;
 	}
 	location /hbnb_static/ {
@@ -92,32 +92,32 @@ file { '/etc/nginx/default-site':
 		rewrite ^ https://sketchfab.com/bluepeno/models permanent;
 	}
 	location = /404.html {
-		root /var/www-root/error/;
+		root /var/www/error/;
 		internal;
 	}
 }",
   require => [
-    Package['nginx-package'],
-    File['/var/www-root/html/index.html'],
-    File['/var/www-root/error/404.html'],
-    Exec['change-data-owner'],
+    Package['nginx'],
+    File['/var/www/html/index.html'],
+    File['/var/www/error/404.html'],
+    Exec['change-data-owner']
   ],
 }
 
-exec { 'enable-default-site':
-  command => "ln -sf '/etc/nginx/default-site' '/etc/nginx/sites-enabled/default-site'",
+exec { 'enable-site':
+  command => "ln -sf '/etc/nginx/sites-available/default' '/etc/nginx/sites-enabled/default'",
   path    => '/usr/bin:/usr/sbin:/bin',
-  require => File['/etc/nginx/default-site'],
+  require => File['/etc/nginx/sites-available/default'],
 }
 
-exec { 'restart-nginx':
+exec { 'start-nginx':
   command => 'sudo service nginx restart',
   path    => '/usr/bin:/usr/sbin:/bin',
   require => [
-    Exec['enable-default-site'],
-    Package['nginx-package'],
+    Exec['enable-site'],
+    Package['nginx'],
     File['/data/web_static/releases/test/index.html'],
   ],
 }
 
-Exec['restart-nginx']
+Exec['start-nginx']
