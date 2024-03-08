@@ -41,12 +41,12 @@ exec { 'make-static-files-folder':
 file { '/data/web_static/releases/test/index.html':
   content =>
 "<!DOCTYPE html>
-<html lang='en-US'>
+<html lang='en'>
 	<head>
-		<title>Home - AirBnB Clone</title>
+		<title>Welcome - AirBnB Clone v2</title>
 	</head>
 	<body>
-		<h1>Welcome to AirBnB!</h1>
+		<h1>A place like home!</h1>
 	<body>
 </html>
 ",
