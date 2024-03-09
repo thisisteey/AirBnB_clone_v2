@@ -2,53 +2,37 @@
 """
 Module for web application deployment using Fabric
 """
-import os
-from datetime import datetime
-from fabric.api import local, runs_once, env, put, run
+from os.path import exists
+from fabric.api import *
 
 env.hosts = ["100.25.199.90", "52.3.242.186"]
-
-
-@runs_once
-def do_pack():
-    """Creates an archive of the static files"""
-    if not os.path.exists("versions"):
-        os.mkdir("versions")
-    currdt = datetime.utcnow()
-    result = f"versions/web_static_{currdt.strftime('%Y%m%d%H%M%S')}.tgz"
-    try:
-        print(f"Packing web_static to {result}")
-        local(f"tar -cvzf {result} web_static")
-        file_size = os.path.getsize(result)
-        print(f"web_static packed: {result} -> {file_size} Bytes")
-    except Exception as e:
-        print(f"Error: {e}")
-        result = None
-    return result
+env.user = "ubuntu"
+env.key_filename = "~/.ssh/school"
 
 
 def do_deploy(archive_path):
     """Distributes archives to the web servers
     Args:
     archive_path: the path to the static files"""
-    if not os.path.exists(archive_path):
-        return False
-    flname = os.path.basename(archive_path)
-    fldname = flname.replace(".tgz", "")
-    fldpath = f"/data/web_static/releases/{fldname}/"
-    output = False
     try:
-        put(archive_path, f"/tmp/{flname}")
+        if not exists(archive_path):
+            print("File does not exist")
+            return False
+        archflname = archive_path.split("/")[-1].split('.')[0]
+        put(archive_path, "/tmp/")
+        fldpath = f"/data/web_static/releases/{archflname}"
+        tmppath = f"/tmp/{archflname}"
+
         run(f"mkdir -p {fldpath}")
-        run(f"tar -xzf /tmp/{flname} -C {fldpath}")
-        run(f"rm -rf /tmp/{flname}")
-        run(f"mv {fldpath}web_static/* {fldpath}")
-        run(f"rm -rf {fldpath}web_static")
-        run("test -L /data/web_static/current && rm /data/web_static/current")
+        run(f"tar -xvzf {tmppath}.tgz -C {fldpath}")
+        run(f"rm {tmppath}.tgz")
+        run(f"mv {fldpath}/web_static/* {fldpath}")
+        run(f"rm -rf {fldpath}")
         run(f"rm -rf /data/web_static/current")
-        run(f"ln -s {fldpath} /data/web_static/current")
-        print('New version deployed!')
-        output = True
-    except Exception as e:
-        output = False
-    return output
+        run(f"ln -sf {fldpath} /data/web_static/current")
+        run("sudo service nginx restart")
+        print("New version deployed!")
+        return True
+    except Exception as err:
+        print(f"Error: {err}")
+        return False
