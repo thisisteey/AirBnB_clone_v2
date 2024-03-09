@@ -31,7 +31,8 @@ def do_deploy(archive_path):
             f' /data/web_static/releases/{fldpath}')
         run(f'rm -rf /data/web_static/releases/{fldpath}/web_static')
         run('rm -rf /data/web_static/current')
-        run(f'ln -sf /data/web_static/releases/{fldpath} /data/web_static/current')
+        run(f'ln -sf /data/web_static/releases/{fldpath}'
+            f' /data/web_static/current')
         run("sudo service nginx restart")
         print("New version deployed!")
         return True
