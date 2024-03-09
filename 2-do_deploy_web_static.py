@@ -42,11 +42,11 @@ def do_deploy(archive_path):
         fldpath = f"/data/web_static/releases/{flnamext}/"
         sudo(f"mkdir -p {fldpath}")
         sudo(f"tar -xzf /tmp/{flname} -C {fldpath}")
-        sudo(f"rsync -a {fldpath}web_static/ {fldpath}")
+        sudo(f"rsync -a {fldpath}web_static/* {fldpath}")
         sudo(f"rm -rf {fldpath}web_static")
         sudo(f"rm -rf /tmp/{flname}")
         sudo(f"rm -rf /data/web_static/current")
-        sudo(f"ln -s {fldpath} /data/web_static/current")
+        sudo(f"ln -sf {fldpath} /data/web_static/current")
         print("New version deployed!")
         return True
     except Exception:
