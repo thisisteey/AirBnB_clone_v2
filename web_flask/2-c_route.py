@@ -23,7 +23,7 @@ def hbnb_page():
 @app.route("/c/<text>")
 def c_page(text):
     """The C page message displayed by the value of <text>"""
-    text = text.replace("-", " ")
+    text = text.replace("_", " ")
     return f"C {text}"
 
 
