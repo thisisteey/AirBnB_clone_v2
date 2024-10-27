@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """ Module for compressing content"""
 from datetime import datetime
-from fabric.api import local
+from invoke import task
 import os
 
-
-def do_pack():
+@task
+def do_pack(c):
     """Creating .tgz archive from the contents of the web static folder"""
     if not os.path.exists("versions"):
         os.makedirs("versions")
@@ -18,10 +18,10 @@ def do_pack():
     #use the local command to create the .tgz archive
 
     command = f"tar -cvzf {archive_name} web_static"
-    result = local(command)
+    result = c.local(command)
 
     # check if the archive was successfully created
-    if result.succeded:
+    if result.succeeded:
         print(f"web_static packed: {archive_name}")
         return archive_name
     else:
